@@ -1,4 +1,4 @@
-# OpenAI API Test
+# Chat_Gpt Interigation Flutter
 
 > This repository contains a node project for integrating the OpenAI's API.
 
