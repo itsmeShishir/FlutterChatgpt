@@ -1,5 +1,8 @@
+import 'package:chatgpt/models/models_model.dart';
+import 'package:chatgpt/provider/models_provider.dart';
 import 'package:chatgpt/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/constants.dart';
 import '../services/api_services.dart';
@@ -12,11 +15,13 @@ class ModelsDropDownWidget extends StatefulWidget {
 }
 
 class _ModelsDropDownWidgetState extends State<ModelsDropDownWidget> {
-  String currentModel = "text-davinci-003";
+  String? currentModel;
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: ApiService.getModels(),
+    final modelsProvider = Provider.of<ModelsProvider>(context, listen: false);
+    currentModel = modelsProvider.getCurrentModel;
+    return FutureBuilder<List<ModelsModel>>(
+      future: modelsProvider.getAllModels(),
       builder: ((context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -28,7 +33,7 @@ class _ModelsDropDownWidgetState extends State<ModelsDropDownWidget> {
         return snapshot.data == null || snapshot.data!.isEmpty
             ? const SizedBox.shrink()
             : FittedBox(
-              child: DropdownButton(
+                child: DropdownButton(
                   dropdownColor: scaffoldBackgroundColor,
                   iconEnabledColor: Colors.white,
                   items: List<DropdownMenuItem<String>>.generate(
@@ -46,9 +51,12 @@ class _ModelsDropDownWidgetState extends State<ModelsDropDownWidget> {
                     setState(() {
                       currentModel = value.toString();
                     });
+                    modelsProvider.setCurentModel(
+                      value.toString(),
+                    );
                   },
                 ),
-            );
+              );
       }),
     );
   }
